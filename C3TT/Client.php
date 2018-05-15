@@ -29,6 +29,7 @@ class Client
     private $token;
     private $secret;
     private $hostname = 'localhost';
+    private $timeout;
 
     /**
      * PhpXmlRpc Client instance
@@ -39,12 +40,13 @@ class Client
 
     private $xmlrpc_encoder = null;
 
-    public function __construct($uri, $worker_group_token, $secret)
+    public function __construct($uri, $worker_group_token, $secret, $timeout = 0)
     {
         $this->url = $uri;
         $this->token = $worker_group_token;
         $this->secret = $secret;
         $this->hostname = gethostname();
+        $this->timeout = $timeout;
 
         $this->_createClient();
     }
@@ -62,7 +64,10 @@ class Client
         $arguments[] = $this->_generateSignature($method, $arguments);
 
         // call remote
-        $response = $this->xmlrpc_client->send(new \PhpXmlRpc\Request($method, $this->xmlrpc_encoder->encode($arguments)));
+        $response = $this->xmlrpc_client->send(
+            new \PhpXmlRpc\Request($method, $this->xmlrpc_encoder->encode($arguments)),
+            $this->timeout
+        );
 
         if ($response->faultCode()) {
             throw new \Exception($response->faultString(), $response->faultCode());
