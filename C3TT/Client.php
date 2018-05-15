@@ -100,7 +100,7 @@ class Client
         ], $arguments);
 
         // encode arguments
-        $args = array();
+        $args = [];
         foreach($signature_arguments as $argument) {
             $args[] = (is_array($argument))?
                 http_build_query(
